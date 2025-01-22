@@ -2,15 +2,24 @@ const Quiz = require('../models/Quiz');
 
 const createQuiz = async (req, res) => {
     try {
+        console.log('Otrzymane dane w body:', req.body); // Sprawdzamy, czy dane docierają
+
         const { title, description } = req.body;
+
+        if (!title || !description) {
+            return res.status(400).json({ message: 'Title and description are required' });
+        }
+
         const quiz = new Quiz({
             title,
             description,
             creator: req.user.userId,
         });
+
         await quiz.save();
         res.status(201).json(quiz);
     } catch (err) {
+        console.error('Błąd podczas tworzenia quizu:', err.message);
         res.status(500).json({ error: 'Could not create quiz' });
     }
 };
