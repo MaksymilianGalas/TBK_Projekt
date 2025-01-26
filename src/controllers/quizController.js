@@ -1,8 +1,9 @@
 const Quiz = require('../models/Quiz');
+const Question = require('../models/Question');
 
 const createQuiz = async (req, res) => {
     try {
-        console.log('Otrzymane dane w body:', req.body); // Sprawdzamy, czy dane docierają
+        console.log('Body data:', req.body);
 
         const { title, description } = req.body;
 
@@ -19,10 +20,54 @@ const createQuiz = async (req, res) => {
         await quiz.save();
         res.status(201).json(quiz);
     } catch (err) {
-        console.error('Błąd podczas tworzenia quizu:', err.message);
+        console.error('Error during quiz creation:', err.message);
         res.status(500).json({ error: 'Could not create quiz' });
     }
 };
+
+const participate = async (req, res) => {
+    try {
+        const quizId = req.params.id;
+        const userAnswers = req.body.answers;
+
+        const quiz = await Quiz.findById(quizId).populate('questions');
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+        const results = quiz.questions.map((question) => {
+            const userAnswer = userAnswers.find(
+                (a) => a.questionId === question._id.toString()
+            );
+            const correctOption = question.options.find((opt) => opt.isCorrect);
+
+            return {
+                questionId: question._id,
+                questionText: question.text,
+                userAnswer: userAnswer ? userAnswer.answer : null,
+                correctAnswer: correctOption ? correctOption.text : null,
+                isCorrect: userAnswer && userAnswer.answer === correctOption.text,
+            };
+        });
+
+
+        const correctAnswers = results.filter((r) => r.isCorrect).length;
+
+        res.json({
+            message: 'Quiz participation complete',
+            correctAnswers,
+            totalQuestions: quiz.questions.length,
+            results,
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Could not participate in quiz', details: err.message });
+    }
+};
+
+
+
+
+
 
 const getAllQuizzes = async (req, res) => {
     try {
@@ -35,13 +80,19 @@ const getAllQuizzes = async (req, res) => {
 
 const getQuizById = async (req, res) => {
     try {
-        const quiz = await Quiz.findById(req.params.id).populate('questions');
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+        const quiz = await Quiz.findById(req.params.id).populate({
+            path: 'questions',
+            select: 'text options',
+        });
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
         res.json(quiz);
     } catch (err) {
-        res.status(500).json({ error: 'Could not fetch quiz' });
+        res.status(500).json({ error: 'Could not fetch quiz', details: err.message });
     }
 };
+
 
 const updateQuiz = async (req, res) => {
     try {
@@ -73,4 +124,4 @@ const searchQuizzes = async (req, res) => {
     }
 };
 
-module.exports = { createQuiz, getAllQuizzes, getQuizById, updateQuiz, deleteQuiz, searchQuizzes };
+module.exports = { createQuiz, getAllQuizzes, getQuizById, participate, updateQuiz, deleteQuiz, searchQuizzes };
