@@ -25,6 +25,36 @@ const registerUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+const updateUserSettings = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const settings = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { settings },
+            { new: true }
+        ).select('-password');
+        res.json({ message: 'Settings updated successfully', settings: updatedUser.settings });
+    } catch (error) {
+        console.error('Error updating user settings:', error.message);
+        res.status(500).json({ message: 'Failed to update settings', details: error.message });
+    }
+};
+const getUserAchievements = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const achievements = [
+            { id: 1, title: 'First Quiz', description: 'Complete your first quiz.' },
+            { id: 2, title: 'Quiz Master', description: 'Complete 10 quizzes.' },
+        ];
+
+        res.json(achievements);
+    } catch (error) {
+        console.error('Error fetching user achievements:', error.message);
+        res.status(500).json({ message: 'Failed to fetch achievements', details: error.message });
+    }
+};
 
 
 const unlockPremium = async (req, res) => {
@@ -182,4 +212,4 @@ const buyItem = async (req, res) => {
 
 
 
-module.exports = { registerUser, loginUser, getUserById, getUserStats, unlockPremium, getTotalPoints, buyItem  };
+module.exports = { registerUser, loginUser, getUserById, unlockPremium, getTotalPoints, buyItem,updateUserSettings, getUserAchievements, getUserStats };

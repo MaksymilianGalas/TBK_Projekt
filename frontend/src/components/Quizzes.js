@@ -43,6 +43,8 @@ const Quizzes = () => {
                     </li>
                 ))}
             </ul>
+            <button onClick={() => navigate('/quizzes/graphic-list')}>Graphic Quizzes</button>
+
             <div className="add-quiz-container">
                 <button className="add-quiz-button" onClick={() => navigate('/quizzes/add')}>
                     Add Quiz

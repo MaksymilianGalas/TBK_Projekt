@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { registerUser, loginUser, getUserById, getUserStats ,unlockPremium ,getTotalPoints, buyItem  } = require('../controllers/userController');
+const { registerUser, updateUserSettings, getUserAchievements,loginUser, getUserById, getUserStats ,unlockPremium ,getTotalPoints, buyItem  } = require('../controllers/userController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
@@ -19,5 +19,8 @@ router.get('/stats', authMiddleware, getUserStats);
 router.post('/premium', authMiddleware, unlockPremium);
 router.get('/total-points', authMiddleware, getTotalPoints);
 router.post('/buy-item', authMiddleware, buyItem);
+router.put('/settings', authMiddleware, updateUserSettings);
+router.get('/achievements', authMiddleware, getUserAchievements);
+
 
 module.exports = router;

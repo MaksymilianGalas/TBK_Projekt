@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import API from '../services/api';
-import Button from "./Button";
 
 const CreateGraphicQuiz = () => {
     const [title, setTitle] = useState('');
@@ -24,14 +23,14 @@ const CreateGraphicQuiz = () => {
             setDescription('');
             setQuestions([]);
         } catch (err) {
-            console.error('Error creating quiz:', err.message);
-            setMessage('Failed to create quiz.');
+            console.error('Error creating graphic quiz:', err.message);
+            setMessage('Failed to create graphic quiz.');
         }
     };
 
     return (
         <div>
-            <h1>Create a Graphic Quiz</h1>
+            <h1>Create Graphic Quiz</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -62,7 +61,7 @@ const CreateGraphicQuiz = () => {
                         />
                         <input
                             type="text"
-                            placeholder="Image URL"
+                            placeholder="Image URL (Optional)"
                             value={question.image}
                             onChange={(e) =>
                                 setQuestions(
@@ -108,10 +107,10 @@ const CreateGraphicQuiz = () => {
                         />
                     </div>
                 ))}
-                <Button  type="button" onClick={handleAddQuestion}>
+                <button type="button" onClick={handleAddQuestion}>
                     Add Question
-                </Button >
-                <Button  type="submit">Create Quiz</Button >
+                </button>
+                <button type="submit">Create Quiz</button>
             </form>
             {message && <p>{message}</p>}
         </div>

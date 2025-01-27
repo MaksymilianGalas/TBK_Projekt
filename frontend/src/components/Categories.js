@@ -11,11 +11,11 @@ const Categories = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await API.get('/quizzes/categories'); // Pobierz kategorie quizów
+                const response = await API.get('/quizzes/categories');
                 setCategories(response.data.categories);
             } catch (err) {
-                console.error('Błąd podczas pobierania kategorii:', err.message);
-                setError('Nie udało się pobrać kategorii.');
+                console.error('Failed to fetch categories:', err.message);
+                setError('Failed to load categories.');
             }
         };
 
@@ -32,14 +32,15 @@ const Categories = () => {
             <ul>
                 {categories.map((category) => (
                     <li key={category.id}>
-                        <Button  onClick={() => navigate(`/quizzes/start/${category.id}`)}>
+                        <Button onClick={() => navigate(`/quizzes/custom?category=${category.id}`)}>
                             {category.name}
-                        </Button >
+                        </Button>
                     </li>
                 ))}
             </ul>
         </div>
     );
 };
+
 
 export default Categories;

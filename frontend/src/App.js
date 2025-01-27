@@ -18,6 +18,9 @@ import CreateGraphicQuiz from './components/CreateGraphicQuiz';
 import QuizForm from './components/QuizForm';
 import QuestionsManager from './components/QuestionsManager';
 import PlayQuiz from './components/PlayQuiz';
+import UserSettings from './components/UserSettings';
+import Achievements from './components/Achievements';
+import UserStats from './components/UserStats';
 
 function App() {
     return (
@@ -35,7 +38,7 @@ function App() {
                 <Link to="/store">Store</Link>
                 <Link to="/features/unlock">Unlock Features</Link>
                 <Link to="/challenges">Challenges</Link>
-
+                <Link to="/settings">Settings</Link>
             </nav>
             <div className="container">
                 <Routes>
@@ -48,6 +51,9 @@ function App() {
                             </div>
                         }
                     />
+                    <Route path="/settings" element={<UserSettings />} />
+                    <Route path="/achievements" element={<Achievements />} />
+                    <Route path="/stats" element={<UserStats />} />
                     <Route path="/play-mode" element={<PlayMode />} />
                     <Route path="/quizzes/solo" element={<SoloMode />} />
                     <Route path="/quizzes/graphic" element={<GraphicMode />} />
@@ -56,7 +62,6 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/rankings" element={<Rankings />} />
                     <Route path="/quizzes" element={<Quizzes />} />
-                    <Route path="/store" element={<Store />} />
                     <Route path="/store" element={<Store />} />
                     <Route path="/features/unlock" element={<UnlockFeatures />} />
                     <Route path="/challenges" element={<Challenges />} />
