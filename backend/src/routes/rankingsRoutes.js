@@ -1,9 +1,8 @@
 const express = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');
 const { getRankings } = require('../controllers/rankingsController');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getRankings);
+router.get('/', getRankings);
 
 module.exports = router;

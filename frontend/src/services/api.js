@@ -4,6 +4,18 @@ const API = axios.create({
     baseURL: process.env.REACT_APP_API_URL, // url backendu z .env
 });
 
+API.interceptors.request.use((config) => {
+    const token = localStorage.getItem('Authorization');
+    if (token) {
+        config.headers.Authorization = token;
+    } else {
+        delete config.headers.Authorization;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
 export const registerUser = async (email, password) => {
     try {
         const response = await API.post('/users/register', { email, password });
@@ -29,3 +41,4 @@ export const loginUser = async (email, password) => {
     }
 };
 
+export default API;

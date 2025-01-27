@@ -1,27 +1,75 @@
 const Quiz = require('../models/quiz');
 const Question = require('../models/question');
+const GraphicQuestion = require('../models/GraphicQuestion');
 
 const createQuiz = async (req, res) => {
     try {
-        console.log('Body data:', req.body);
+        const { title, description, questions } = req.body;
 
-        const { title, description } = req.body;
 
-        if (!title || !description) {
-            return res.status(400).json({ message: 'Title and description are required' });
+        if (!title || !description || !questions || questions.length === 0) {
+            return res.status(400).json({ message: 'Quiz must have a title, description, and at least one question.' });
         }
+
 
         const quiz = new Quiz({
             title,
             description,
+            questions,
             creator: req.user.userId,
         });
 
         await quiz.save();
         res.status(201).json(quiz);
     } catch (err) {
-        console.error('Error during quiz creation:', err.message);
-        res.status(500).json({ error: 'Could not create quiz' });
+        console.error('Error creating quiz:', err.message);
+        res.status(500).json({ error: 'Could not create quiz', details: err.message });
+    }
+};
+
+
+
+const editQuiz = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, questions } = req.body;
+
+        const quiz = await Quiz.findById(id);
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+
+        quiz.title = title || quiz.title;
+        quiz.description = description || quiz.description;
+
+
+        if (questions && Array.isArray(questions)) {
+            for (const q of questions) {
+                if (q._id) {
+
+                    await Question.findByIdAndUpdate(q._id, {
+                        text: q.text,
+                        options: q.options,
+                    });
+                } else {
+
+                    const newQuestion = new Question({
+                        text: q.text,
+                        options: q.options,
+                        quiz: quiz._id,
+                    });
+                    await newQuestion.save();
+                    quiz.questions.push(newQuestion._id);
+                }
+            }
+        }
+
+        await quiz.save();
+        res.json({ message: 'Quiz updated successfully!', quiz });
+    } catch (err) {
+        console.error('Error editing quiz:', err.message);
+        res.status(500).json({ error: 'Could not edit quiz' });
     }
 };
 
@@ -64,14 +112,55 @@ const participate = async (req, res) => {
     }
 };
 
+const getGraphicQuestions = async (req, res) => {
+    try {
+        const { quizId } = req.params;
+        const questions = await GraphicQuestion.find({ quizId });
+        if (!questions.length) {
+            return res.status(404).json({ message: 'No questions found for this quiz' });
+        }
+        res.json(questions);
+    } catch (error) {
+        console.error('Error fetching graphic questions:', error.message);
+        res.status(500).json({ message: 'Server error', details: error.message });
+    }
+};
 
 
+const createGraphicQuiz = async (req, res) => {
+    try {
+        const { title, description, questions } = req.body;
 
+
+        const newQuiz = new Quiz({
+            title,
+            description,
+            type: 'graphic',
+            userId: req.user.userId,
+        });
+        const savedQuiz = await newQuiz.save();
+
+
+        const graphicQuestions = questions.map((question) => ({
+            quizId: savedQuiz._id,
+            text: question.text,
+            image: question.image,
+            answers: question.answers,
+            correctAnswer: question.correctAnswer,
+        }));
+        await GraphicQuestion.insertMany(graphicQuestions);
+
+        res.status(201).json({ message: 'Graphic quiz created successfully!' });
+    } catch (error) {
+        console.error('Error creating graphic quiz:', error.message);
+        res.status(500).json({ message: 'Server error', details: error.message });
+    }
+};
 
 
 const getAllQuizzes = async (req, res) => {
     try {
-        const quizzes = await Quiz.find().populate('creator', 'email');
+        const quizzes = await Quiz.find().populate('creator', '_id email'); // Dodajemy ID i email twórcy
         res.json(quizzes);
     } catch (err) {
         res.status(500).json({ error: 'Could not fetch quizzes' });
@@ -96,21 +185,36 @@ const getQuizById = async (req, res) => {
 
 const updateQuiz = async (req, res) => {
     try {
-        const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+        const { title, description } = req.body;
+        const quiz = await Quiz.findByIdAndUpdate(
+            req.params.id,
+            { title, description },
+            { new: true }
+        );
+
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
         res.json(quiz);
     } catch (err) {
-        res.status(500).json({ error: 'Could not update quiz' });
+        res.status(500).json({ error: 'Could not update quiz', details: err.message });
     }
 };
 
 const deleteQuiz = async (req, res) => {
     try {
         const quiz = await Quiz.findByIdAndDelete(req.params.id);
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
-        res.json({ message: 'Quiz deleted successfully' });
+
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
+
+
+        await Question.deleteMany({ quiz: quiz._id });
+        res.json({ message: 'Quiz and related questions deleted successfully' });
     } catch (err) {
-        res.status(500).json({ error: 'Could not delete quiz' });
+        res.status(500).json({ error: 'Could not delete quiz', details: err.message });
     }
 };
 
@@ -124,4 +228,4 @@ const searchQuizzes = async (req, res) => {
     }
 };
 
-module.exports = { createQuiz, getAllQuizzes, getQuizById, participate, updateQuiz, deleteQuiz, searchQuizzes };
+module.exports = { createQuiz, getAllQuizzes, getQuizById, participate, updateQuiz, deleteQuiz, searchQuizzes, getGraphicQuestions, createGraphicQuiz,editQuiz };

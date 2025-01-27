@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { loginUser } from '../services/api';
+
+import axios from "axios";
+import Button from "./Button";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -9,10 +11,19 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const data = await loginUser(email, password);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
+                email,
+                password,
+            });
+            const token = response.data.token; // Pobierz token z odpowiedzi
+            console.log('Received token:', token);
+
+            // Zapisz token z prefiksem "Bearer" w localStorage
+            localStorage.setItem('Authorization', `Bearer ${token}`);
+
             setMessage('Login successful!');
-            localStorage.setItem('token', data.token); // token w local storage
         } catch (error) {
+            console.error('Login error:', error.response?.data || error.message);
             setMessage('Login failed. Try again.');
         }
     };
@@ -33,7 +44,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Login</button>
+                <Button  type="submit">Login</Button >
             </form>
             <p>{message}</p>
         </div>

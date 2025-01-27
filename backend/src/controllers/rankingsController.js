@@ -1,14 +1,28 @@
-const Points = require('../models/points');
+const Result = require('../models/result');
 const User = require('../models/user');
 
 const getRankings = async (req, res) => {
     try {
-        const rankings = await Points.find()
-            .sort({ totalPoints: -1 }) // sortowanie od największej liczby punktów
-            .populate('user', 'email');
-        res.json(rankings);
+        const rankings = await Result.aggregate([
+            {
+                $group: {
+                    _id: '$user',
+                    totalScore: { $sum: '$score' },
+                },
+            },
+            {
+                $sort: { totalScore: -1 },
+            },
+            {
+                $limit: 10,
+            },
+        ]).exec();
+
+        const populatedRankings = await User.populate(rankings, { path: '_id', select: 'email' });
+
+        res.json(populatedRankings);
     } catch (err) {
-        res.status(500).json({ error: 'Could not fetch rankings' });
+        res.status(500).json({ error: 'Could not fetch rankings', details: err.message });
     }
 };
 

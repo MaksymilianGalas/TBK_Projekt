@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../services/api';
 
 const Rankings = () => {
     const [rankings, setRankings] = useState([]);
@@ -8,10 +8,11 @@ const Rankings = () => {
     useEffect(() => {
         const fetchRankings = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/rankings`);
+                const response = await API.get('/rankings');
                 setRankings(response.data);
             } catch (err) {
-                setError('Failed to fetch rankings.');
+                console.error('Failed to fetch rankings:', err.message);
+                setError('Failed to load rankings.');
             }
         };
 
@@ -24,11 +25,11 @@ const Rankings = () => {
 
     return (
         <div>
-            <h1>Rankings</h1>
+            <h1>Player Rankings</h1>
             <ul>
-                {rankings.map((user, index) => (
+                {rankings.map((entry, index) => (
                     <li key={index}>
-                        {index + 1}. {user.name} - {user.points} points
+                        {index + 1}. {entry._id.email} - {entry.totalScore} points
                     </li>
                 ))}
             </ul>

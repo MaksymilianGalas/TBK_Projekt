@@ -5,6 +5,19 @@ import Register from './components/Register';
 import Login from './components/Login';
 import Profile from './components/Profile';
 import Rankings from './components/Rankings';
+import Quizzes from './components/Quizzes';
+import Store from './components/Store';
+import Challenges from "./components/Challenges";
+import UnlockFeatures from "./components/UnlockFeatures";
+import PlayMode from './components/PlayMode';
+import SoloMode from './components/SoloMode';
+import GraphicMode from './components/GraphicMode';
+import Categories from './components/Categories';
+import CreateQuiz from './components/CreateQuiz';
+import CreateGraphicQuiz from './components/CreateGraphicQuiz';
+import QuizForm from './components/QuizForm';
+import QuestionsManager from './components/QuestionsManager';
+import PlayQuiz from './components/PlayQuiz';
 
 function App() {
     return (
@@ -16,6 +29,13 @@ function App() {
                 <Link to="/">Home</Link>
                 <Link to="/register">Register</Link>
                 <Link to="/login">Login</Link>
+                <Link to="/profile">Profile</Link>
+                <Link to="/rankings">Rankings</Link>
+                <Link to="/quizzes">Quizzes</Link>
+                <Link to="/store">Store</Link>
+                <Link to="/features/unlock">Unlock Features</Link>
+                <Link to="/challenges">Challenges</Link>
+
             </nav>
             <div className="container">
                 <Routes>
@@ -28,10 +48,27 @@ function App() {
                             </div>
                         }
                     />
+                    <Route path="/play-mode" element={<PlayMode />} />
+                    <Route path="/quizzes/solo" element={<SoloMode />} />
+                    <Route path="/quizzes/graphic" element={<GraphicMode />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/rankings" element={<Rankings />} />
+                    <Route path="/quizzes" element={<Quizzes />} />
+                    <Route path="/store" element={<Store />} />
+                    <Route path="/store" element={<Store />} />
+                    <Route path="/features/unlock" element={<UnlockFeatures />} />
+                    <Route path="/challenges" element={<Challenges />} />
+                    <Route path="/quizzes/categories" element={<Categories />} />
+                    <Route path="/quizzes/custom" element={<CreateQuiz />} />
+                    <Route path="/quizzes/graphic" element={<GraphicMode />} />
+                    <Route path="/quizzes/create-graphic" element={<CreateGraphicQuiz />} />
+                    <Route path="/quizzes/edit/:id" element={<QuizForm isEdit />} />
+                    <Route path="/quizzes/:quizId/questions" element={<QuestionsManager />} />
+                    <Route path="/quizzes/:quizId" element={<PlayQuiz />} />
+                    <Route path="/quizzes/add" element={<QuizForm isEdit={false} />} />
+
                 </Routes>
             </div>
         </Router>
