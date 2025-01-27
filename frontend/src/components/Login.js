@@ -15,10 +15,10 @@ const Login = () => {
                 email,
                 password,
             });
-            const token = response.data.token; // Pobierz token z odpowiedzi
+            const token = response.data.token;
             console.log('Received token:', token);
 
-            // Zapisz token z prefiksem "Bearer" w localStorage
+
             localStorage.setItem('Authorization', `Bearer ${token}`);
 
             setMessage('Login successful!');

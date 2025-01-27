@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import API from '../services/api';
 
 const QuizForm = ({ isEdit = false }) => {
-    const { id } = useParams(); // Używane tylko w trybie edycji
+    const { id } = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
@@ -59,7 +59,7 @@ const QuizForm = ({ isEdit = false }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Walidacja: tytuł, opis i przynajmniej jedno pytanie
+        // walidacja
         if (!title.trim() || !description.trim() || questions.length === 0) {
             setMessage('Quiz must have a title, description, and at least one question.');
             return;

@@ -9,7 +9,7 @@ const SoloMode = () => {
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
-                const response = await API.get('/quizzes/solo'); // Pobierz pytanie dla solo mode
+                const response = await API.get('/quizzes/solo');
                 setQuestion(response.data);
             } catch (err) {
                 console.error('Failed to fetch question:', err.message);

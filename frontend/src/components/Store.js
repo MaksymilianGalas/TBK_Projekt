@@ -26,8 +26,8 @@ const Store = () => {
         try {
             const response = await API.post('/users/buy-item', { itemName, cost });
             setMessage(response.data.message);
-            setPoints(response.data.points); // Aktualizacja punktów po zakupie
-            setInventory(response.data.inventory); // Aktualizacja ekwipunku
+            setPoints(response.data.points);
+            setInventory(response.data.inventory);
         } catch (err) {
             console.error('Error buying item:', err.message);
             setMessage('Failed to buy item. Please try again.');

@@ -8,10 +8,10 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        console.log('Attempting to register:', email, password); // Debugowanie
+        console.log('Attempting to register:', email, password);
         try {
             const data = await registerUser(email, password);
-            console.log('Registration successful:', data); // Debugowanie
+            console.log('Registration successful:', data);
             setMessage('Registration successful!');
         } catch (error) {
             console.error('Registration error:', error.response?.data || error.message);

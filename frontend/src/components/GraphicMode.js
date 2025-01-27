@@ -9,7 +9,7 @@ const GraphicMode = () => {
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
-                const response = await API.get('/quizzes/graphic'); // Pobierz pytanie graficzne
+                const response = await API.get('/quizzes/graphic');
                 setQuestion(response.data);
             } catch (err) {
                 console.error('Błąd podczas pobierania pytania:', err.message);
