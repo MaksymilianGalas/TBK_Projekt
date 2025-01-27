@@ -169,10 +169,7 @@ const getAllQuizzes = async (req, res) => {
 
 const getQuizById = async (req, res) => {
     try {
-        const quiz = await Quiz.findById(req.params.id).populate({
-            path: 'questions',
-            select: 'text options',
-        });
+        const quiz = await Quiz.findById(req.params.id).populate('questions');
         if (!quiz) {
             return res.status(404).json({ message: 'Quiz not found' });
         }
@@ -185,10 +182,15 @@ const getQuizById = async (req, res) => {
 
 const updateQuiz = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, questions } = req.body;
+
+        if (!title || !description || !questions || questions.length === 0) {
+            return res.status(400).json({ message: 'Quiz must have a title, description, and at least one question.' });
+        }
+
         const quiz = await Quiz.findByIdAndUpdate(
             req.params.id,
-            { title, description },
+            { title, description, questions },
             { new: true }
         );
 

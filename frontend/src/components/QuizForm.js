@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import API from '../services/api';
 
-const QuizForm = ({ isEdit }) => {
-    const { quizId } = useParams();
-    const navigate = useNavigate();
+const QuizForm = ({ isEdit = false }) => {
+    const { id } = useParams(); // Używane tylko w trybie edycji
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
@@ -18,29 +17,27 @@ const QuizForm = ({ isEdit }) => {
         ],
     });
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (isEdit && quizId) {
+        if (isEdit && id) {
             const fetchQuiz = async () => {
                 try {
-                    const response = await API.get(`/quizzes/${quizId}`);
-                    const { title, description, questions } = response.data;
-                    setTitle(title);
-                    setDescription(description);
-                    setQuestions(questions);
+                    const response = await API.get(`/quizzes/${id}`);
+                    setTitle(response.data.title);
+                    setDescription(response.data.description);
+                    setQuestions(response.data.questions || []);
                 } catch (err) {
-                    console.error('Error fetching quiz data:', err.message);
-                    setMessage('Failed to load quiz data.');
+                    console.error('Error fetching quiz:', err.message);
+                    setMessage('Failed to load quiz.');
                 }
             };
-
             fetchQuiz();
         }
-    }, [isEdit, quizId]);
+    }, [isEdit, id]);
 
     const handleAddQuestion = () => {
         const correctAnswersCount = newQuestion.options.filter((o) => o.isCorrect).length;
-
         if (!newQuestion.text.trim() || correctAnswersCount !== 1) {
             setMessage('Each question must have a text and exactly one correct answer.');
             return;
@@ -62,6 +59,7 @@ const QuizForm = ({ isEdit }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Walidacja: tytuł, opis i przynajmniej jedno pytanie
         if (!title.trim() || !description.trim() || questions.length === 0) {
             setMessage('Quiz must have a title, description, and at least one question.');
             return;
@@ -69,13 +67,13 @@ const QuizForm = ({ isEdit }) => {
 
         try {
             if (isEdit) {
-                await API.put(`/quizzes/${quizId}`, { title, description, questions });
+                await API.put(`/quizzes/${id}`, { title, description, questions });
                 setMessage('Quiz updated successfully!');
             } else {
                 await API.post('/quizzes', { title, description, questions });
                 setMessage('Quiz created successfully!');
             }
-            setTimeout(() => navigate('/quizzes'), 1500);
+            navigate('/quizzes');
         } catch (err) {
             console.error('Error saving quiz:', err.message);
             setMessage('Failed to save quiz.');
@@ -155,7 +153,6 @@ const QuizForm = ({ isEdit }) => {
                 </div>
             ))}
             <button onClick={handleAddQuestion}>Add Question</button>
-
             {message && <p>{message}</p>}
         </div>
     );

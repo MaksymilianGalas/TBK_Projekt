@@ -11,7 +11,6 @@ const PlayQuiz = () => {
     const [score, setScore] = useState(0);
     const [message, setMessage] = useState('');
     const [isFinished, setIsFinished] = useState(false);
-    const [isScoreSubmitted, setIsScoreSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     useEffect(() => {
         const fetchQuiz = async () => {

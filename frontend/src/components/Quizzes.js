@@ -13,7 +13,6 @@ const Quizzes = () => {
                 const response = await API.get('/quizzes');
                 setQuizzes(response.data);
 
-
                 const token = localStorage.getItem('Authorization');
                 if (token) {
                     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -44,8 +43,6 @@ const Quizzes = () => {
                     </li>
                 ))}
             </ul>
-
-
             <div className="add-quiz-container">
                 <button className="add-quiz-button" onClick={() => navigate('/quizzes/add')}>
                     Add Quiz
