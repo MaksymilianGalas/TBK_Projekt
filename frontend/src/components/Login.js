@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import axios from "axios";
 import Button from "./Button";
 
@@ -18,14 +17,17 @@ const Login = () => {
             const token = response.data.token;
             console.log('Received token:', token);
 
-
             localStorage.setItem('Authorization', `Bearer ${token}`);
-
             setMessage('Login successful!');
         } catch (error) {
             console.error('Login error:', error.response?.data || error.message);
             setMessage('Login failed. Try again.');
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('Authorization');
+        setMessage('Logged out successfully!');
     };
 
     return (
@@ -44,9 +46,10 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button  type="submit">Login</Button >
+                <Button type="submit">Login</Button>
             </form>
             <p>{message}</p>
+            <Button onClick={handleLogout}>Logout</Button>
         </div>
     );
 };
